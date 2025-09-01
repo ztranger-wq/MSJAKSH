@@ -4,7 +4,7 @@ import { AuthContext } from './AuthContext'; // Import the actual AuthContext
 
 export const CartContext = createContext();
 
-const API_URL = 'http://localhost:5001/api/cart';
+const API_URL = '/api/cart';
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);

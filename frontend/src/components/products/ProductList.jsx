@@ -3,7 +3,7 @@ import axios from 'axios';
 import ProductCard from './ProductCard';
 import './ProductList.css';
 
-const API_URL = 'http://localhost:5001/api/products';
+const API_URL = '/api/products';
 
 const ProductList = ({ brand, category, searchTerm, limit }) => {
   const [products, setProducts] = useState([]);
