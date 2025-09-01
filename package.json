@@ -1,0 +1,19 @@
+{
+  "name": "ms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run --prefix backend start\" \"npm run --prefix frontend dev\"",
+    "dev": "concurrently \"npm run --prefix backend dev\" \"npm run --prefix frontend dev\"",
+    "seed": "node backend/utils/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
+  }
+}

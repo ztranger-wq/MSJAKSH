@@ -1,0 +1,40 @@
+.hero-section {
+    color: white;
+    background-color: var(--dark-gray);
+    position: relative;
+    overflow: hidden;
+    padding: 5rem 0;
+    text-align: center;
+}
+
+#hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    color: #d1d5db;
+}
+
+@media (min-width: 1024px) {
+    .hero-title { font-size: 3.75rem; }
+    .hero-subtitle { font-size: 1.25rem; }
+}

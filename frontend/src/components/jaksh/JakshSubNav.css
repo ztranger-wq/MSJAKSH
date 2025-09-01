@@ -1,0 +1,28 @@
+.jaksh-sub-nav {
+    background-color: #fff;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: sticky;
+    top: 65px; /* Height of the main header */
+    z-index: 40;
+}
+
+.sub-nav-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-dark);
+    transition: color 0.2s ease, border-bottom 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.sub-nav-btn.active {
+    color: var(--main-red);
+    border-bottom-color: var(--main-red);
+}
