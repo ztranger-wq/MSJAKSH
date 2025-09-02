@@ -39,8 +39,20 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  const handleLike = () => {
-    // Implement wishlist logic here
+  // ONLY CHANGE: Replace this function
+  const handleLike = async () => {
+    if (!user) {
+      alert('Please log in to add items to your wishlist.');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await toggleWishlist(product._id);
+    } catch (error) {
+      console.error('Failed to toggle wishlist:', error);
+      alert('Failed to update wishlist. Please try again.');
+    }
   };
 
   return (
