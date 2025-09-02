@@ -7,7 +7,9 @@ const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 
-dotenv.config();
+// Point to the .env file in the backend directory, regardless of where the script is run from
+dotenv.config({ path: path.resolve(__dirname, './.env') });
+
 connectDB();
 
 const app = express();

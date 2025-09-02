@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductCard from './ProductCard';
 import './ProductList.css';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const API_URL = '/api/products';
 
@@ -9,6 +10,7 @@ const ProductList = ({ brand, category, searchTerm, limit }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,8 +19,8 @@ const ProductList = ({ brand, category, searchTerm, limit }) => {
       try {
         const params = new URLSearchParams();
         if (brand) params.append('brand', brand);
-        if (category && category !== 'all') params.append('category', category);
-        if (searchTerm) params.append('search', searchTerm);
+        if (category) params.append('category', category);
+        if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (limit) params.append('limit', limit);
 
         const { data } = await axios.get(`${API_URL}?${params.toString()}`);
@@ -34,10 +36,9 @@ const ProductList = ({ brand, category, searchTerm, limit }) => {
         setLoading(false);
       }
     };
-    // Debounce search term to avoid excessive API calls
-    const timer = setTimeout(() => fetchProducts(), 300);
-    return () => clearTimeout(timer);
-  }, [brand, category, searchTerm, limit]);
+    
+    fetchProducts();
+  }, [brand, category, debouncedSearchTerm, limit]);
 
   if (loading) return <div>Loading products...</div>;
   if (error) return <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>;
