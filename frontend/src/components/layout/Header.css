@@ -10,16 +10,30 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
 }
 
 .logo-container {
     flex-shrink: 0;
 }
 
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-dark);
+}
+
 .logo-img {
-    height: 2.5rem; /* 40px */
+    height: 4.8rem; /* ~77px */
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .desktop-nav {
@@ -38,13 +52,18 @@
     color: var(--main-red);
 }
 
+.cart-link:hover, .wishlist-icon-link:hover, .profile-icon-link:hover {
+    color: var(--main-red);
+    transform: scale(1.1);
+}
+
 .nav-link.active {
     color: var(--main-red);
     font-weight: 600;
 }
 
 .jaksh-link {
-    font-weight: 700;
+    font-weight: 900;
 }
 
 .cart-link {
@@ -123,4 +142,35 @@
     .mobile-nav {
         display: none;
     }
+}
+
+.wishlist-icon-link {
+    padding: 0.5rem;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.wishlist-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    stroke-width: 1.5;
+}
+
+.wishlist-icon-link {
+    padding: 0.5rem;
+}
+
+.wishlist-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    stroke-width: 1.5;
+}
+
+.profile-icon-link {
+    padding: 0.5rem;
+}
+
+.profile-icon {
+    width: 1.75rem; /* 28px */
+    height: 1.75rem;
+    stroke-width: 1.5;
 }

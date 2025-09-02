@@ -67,6 +67,26 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const updateItemQuantity = async (productId, quantity) => {
+    if (user) {
+      // Use same endpoint as addItemToCart which updates quantity if item exists
+      const { data } = await axios.post(API_URL, { productId, quantity });
+      setCart(data);
+    } else {
+      // Update guest/local cart
+      const newCart = cart.map(item => {
+        const pid = item.product ? item.product._id : (item._id || (item.product && item.product._id));
+        if (pid === productId) {
+          return { ...item, quantity };
+        }
+        return item;
+      });
+      setCart(newCart);
+      localStorage.setItem('cart', JSON.stringify(newCart));
+    }
+  };
+
+
   const removeItemFromCart = async (productId) => {
     if (user) {
       const { data } = await axios.delete(`${API_URL}/${productId}`);

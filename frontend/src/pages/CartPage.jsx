@@ -1,66 +1,114 @@
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { Link } from 'react-router-dom';
+import { FaTrash } from 'react-icons/fa';
 import './CartPage.css';
 
 const CartPage = () => {
-  const { cart, removeItemFromCart, addItemToCart, loading } = useContext(CartContext);
-  const navigate = useNavigate();
+  const { cart, removeItemFromCart, updateItemQuantity, clearCart } = useContext(CartContext);
 
-  const total = cart.reduce((acc, item) => acc + (item.product ? item.product.price * item.quantity : 0), 0);
-
-  const handleCheckout = () => {
-    navigate('/checkout');
+    // Normalize cart items because backend returns { product: {...}, quantity }
+  // while guest/local cart might store { product: {...}, quantity } or flattened product fields.
+  const normalizeItem = (item) => {
+    if (!item) return null;
+    const product = item.product || item;
+    const quantity = item.quantity ?? 1;
+    return {
+      _id: product._id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price ?? 0,
+      images: (product.images || (product.image ? [product.image] : [])),
+      quantity,
+      raw: item
+    };
   };
 
-  if (loading) return <div>Loading cart...</div>;
+  const normalizedCart = (cart || []).map(normalizeItem).filter(Boolean);
+
+  const jakshItems = normalizedCart.filter(item => item.brand === 'Jaksh');
+  const msItems = normalizedCart.filter(item => item.brand === 'MS');
+
+  const subtotal = normalizedCart.reduce((acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 0), 0);
+  const shipping = subtotal > 0 ? 50 : 0;
+  const total = subtotal + shipping;
 
   return (
-    <div className="container cart-page">
-      <h1>Your Shopping Cart</h1>
+    <div className="cart-page container page-padding">
+      <h1 className="cart-page-title">Shopping Cart</h1>
       {cart.length === 0 ? (
-        <div className="empty-cart">
-          <p>Your cart is empty.</p>
+        <div className="empty-cart-container">
+          <p>Your cart is currently empty.</p>
           <Link to="/products" className="button-primary">Continue Shopping</Link>
         </div>
       ) : (
-        <>
-          <div>
-            {cart.map(item => (
-              <div key={item.product._id} className="cart-item">
-                <img src={item.product.images[0]} alt={item.product.name} className="cart-item-img" />
-                <div className="cart-item-details">
-                  <h3>{item.product.name}</h3>
-                  <p>₹{item.product.price.toFixed(2)}</p>
-                </div>
-                <div>
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => {
-                      const newQuantity = parseInt(e.target.value);
-                      if (!isNaN(newQuantity) && newQuantity > 0) {
-                        addItemToCart(item.product, newQuantity);
-                      }
-                    }}
-                    min="1"
-                    className="form-input"
-                    style={{ width: '60px', textAlign: 'center' }}
-                  />
-                </div>
-                <button onClick={() => removeItemFromCart(item.product._id)} className="button-danger">
-                  Remove
-                </button>
+        <div className="cart-layout">
+          <div className="cart-items-container">
+            {jakshItems.length > 0 && (
+              <div className="cart-brand-section">
+                <h2 className="cart-brand-title">Jaksh Products</h2>
+                {jakshItems.map(item => (
+                  <div key={item._id} className="cart-item">
+                    <img src={item.images[0]} alt={item.name} className="cart-item-image" />
+                    <div className="cart-item-details">
+                      <Link to={`/product/${item._id}`} className="cart-item-name">{item.name}</Link>
+                      <p className="cart-item-price">₹{item.price.toFixed(2)}</p>
+                      <div className="cart-item-actions">
+                        <div className="quantity-selector-cart">
+                          <button onClick={() => updateItemQuantity(item._id, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
+                          <span>{item.quantity}</span>
+                          <button onClick={() => updateItemQuantity(item._id, item.quantity + 1)}>+</button>
+                        </div>
+                        <button onClick={() => removeItemFromCart(item._id)} className="remove-item-btn"><FaTrash /></button>
+                      </div>
+                    </div>
+                    <p className="cart-item-subtotal">₹{(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+            {msItems.length > 0 && (
+              <div className="cart-brand-section">
+                <h2 className="cart-brand-title">MS Enterprises Products</h2>
+                {msItems.map(item => (
+                  <div key={item._id} className="cart-item">
+                    <img src={item.images[0]} alt={item.name} className="cart-item-image" />
+                    <div className="cart-item-details">
+                      <Link to={`/product/${item._id}`} className="cart-item-name">{item.name}</Link>
+                      <p className="cart-item-price">₹{item.price.toFixed(2)}</p>
+                      <div className="cart-item-actions">
+                        <div className="quantity-selector-cart">
+                          <button onClick={() => updateItemQuantity(item._id, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
+                          <span>{item.quantity}</span>
+                          <button onClick={() => updateItemQuantity(item._id, item.quantity + 1)}>+</button>
+                        </div>
+                        <button onClick={() => removeItemFromCart(item._id)} className="remove-item-btn"><FaTrash /></button>
+                      </div>
+                    </div>
+                    <p className="cart-item-subtotal">₹{(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={clearCart} className="clear-cart-btn">Clear Cart</button>
           </div>
-          <div className="cart-summary">
-            <h2>Subtotal: ₹{total.toFixed(2)}</h2>
-            <button onClick={handleCheckout} className="button-primary">
-              Proceed to Checkout
-            </button>
+          <div className="order-summary-container">
+            <h2 className="summary-title">Order Summary</h2>
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
+            <div className="summary-row">
+              <span>Shipping</span>
+              <span>₹{shipping.toFixed(2)}</span>
+            </div>
+            <div className="summary-row total-row">
+              <span>Total</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+            <button className="button-primary w-full checkout-btn">Proceed to Checkout</button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

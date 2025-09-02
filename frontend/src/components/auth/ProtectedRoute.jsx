@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
@@ -8,7 +8,10 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) return <div>Loading...</div>;
 
-  return user ? children : <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+
+  // Render children if provided, otherwise render nested routes via Outlet
+  return children ? children : <Outlet />;
 };
 
 export default ProtectedRoute;

@@ -1,19 +1,32 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import ProductCard from '../components/products/ProductCard';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const { user, updateProfile, deleteAccount, wishlist } = useContext(AuthContext);
+  const { user, logout, updateProfile, deleteAccount, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [name, setName] = useState(user.name);
+  const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
-  if (!user) return <div>Please log in to see your profile.</div>;
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div className="container page-padding"><h1>Loading Profile...</h1></div>;
+  }
+
+  if (!user) {
+    return <div className="container page-padding">Please log in to see your profile.</div>;
+  }
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -25,6 +38,11 @@ const ProfilePage = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update profile.');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const handleDelete = async () => {
@@ -39,8 +57,11 @@ const ProfilePage = () => {
 
   return (
     <div className="container profile-page">
-      <h1>My Profile</h1>
-      
+      <div className="profile-header">
+        <h1>My Profile</h1>
+        <button onClick={handleLogout} className="button-secondary">Logout</button>
+      </div>
+
       <div className="profile-section">
         <h3>Update Your Information</h3>
         <form onSubmit={handleUpdate}>
@@ -58,31 +79,32 @@ const ProfilePage = () => {
         </form>
       </div>
 
-      <div className="profile-section">
-        <h3>My Wishlist</h3>
-        {wishlist.length > 0 ? (
-          <div className="product-list-grid">
-            {wishlist.map(product => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <p>You haven't liked any products yet.</p>
-        )}
-      </div>
-
       <div className="profile-section danger-zone">
         <h3>Danger Zone</h3>
-        <p>Deleting your account is a permanent action and cannot be undone.</p>
-        <button onClick={() => setShowDeleteConfirm(true)} className="button-danger">Delete My Account</button>
+        <div className="danger-action">
+          <div>
+            <h4>Delete Account</h4>
+            <p>This action is permanent and cannot be undone.</p>
+          </div>
+          <button onClick={() => setShowDeleteConfirm(true)} className="button-danger">Delete My Account</button>
+        </div>
         
         {showDeleteConfirm && (
           <div className="confirmation-modal">
-            <h4>Are you sure?</h4>
-            <p>This will permanently delete your account, orders, and all associated data.</p>
+            <h4>Are you absolutely sure?</h4>
+            <p>This will permanently delete your account, orders, and all associated data. To confirm, please type "<strong>Confirm Delete</strong>" in the box below.</p>
+            <div className="form-group">
+              <input
+                type="text"
+                className="form-input"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Confirm Delete"
+              />
+            </div>
             <div className="confirmation-buttons">
-              <button onClick={handleDelete} className="button-danger">Yes, Delete My Account</button>
-              <button onClick={() => setShowDeleteConfirm(false)} className="button-secondary">Cancel</button>
+              <button onClick={handleDelete} className="button-danger" disabled={deleteConfirmText !== 'Confirm Delete'}>I understand, delete my account</button>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }} className="button-secondary">Cancel</button>
             </div>
           </div>
         )}

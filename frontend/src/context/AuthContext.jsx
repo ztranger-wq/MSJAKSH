@@ -1,55 +1,54 @@
-import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import api from '../utils/api'; // Use our central api instance
 
 export const AuthContext = createContext(null);
-
-const API_URL = '/api/auth';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const fetchWishlist = async (token) => {
-    try {
-      const { data } = await axios.get(`${API_URL}/profile/wishlist`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setWishlist(data);
-    } catch (error) {
-      console.error("Failed to fetch wishlist", error);
-    }
-  };
-
-  useEffect(() => {
+  // This is the new core function to load the complete user profile.
+  const loadUser = useCallback(async () => {
+    // The token is now handled by the api interceptor, but we check for it
+    // in localStorage to see if we should even attempt to load a user.
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
-      fetchWishlist(userData.token);
+    if (storedUser && JSON.parse(storedUser).token) {
+      try {
+        // This single API call gets the full user object AND the populated wishlist.
+        const { data } = await api.get('/auth/profile');
+        setUser(data);
+        setWishlist(data.wishlist || []);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Failed to load user profile, logging out.', error);
+        logout(); // Token is likely invalid/expired.
+      }
     }
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
   const login = async (email, password) => {
-    const response = await axios.post(`${API_URL}/login`, { email, password });
+    const response = await api.post('/auth/login', { email, password });
     if (response.data) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      setUser(response.data);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      fetchWishlist(response.data.token);
+      // Only store the token. The full user data will be fetched by loadUser.
+      localStorage.setItem('user', JSON.stringify({ token: response.data.token }));
+      await loadUser(); // Fetch the complete user profile after login.
     }
     return response.data;
   };
 
   const register = async (name, email, password) => {
-    const response = await axios.post(`${API_URL}/register`, { name, email, password });
+    const response = await api.post('/auth/register', { name, email, password });
     if (response.data) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      setUser(response.data);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setWishlist([]); // Start with an empty wishlist for new users
+      localStorage.setItem('user', JSON.stringify({ token: response.data.token }));
+      await loadUser(); // Fetch the complete user profile after registration.
     }
     return response.data;
   };
@@ -57,50 +56,64 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('user');
     setUser(null);
-    delete axios.defaults.headers.common['Authorization'];
     setWishlist([]);
-    // Note: We don't clear the cart here, so the guest cart persists on logout
+    setIsAuthenticated(false);
   };
 
   const forgotPassword = async (email) => {
-    const response = await axios.post(`${API_URL}/forgot-password`, { email });
+    const response = await api.post('/auth/forgot-password', { email });
     return response.data;
   };
 
   const resetPassword = async (token, password) => {
-    const response = await axios.patch(`${API_URL}/reset-password/${token}`, { password });
+    const response = await api.patch(`/auth/reset-password/${token}`, { password });
     return response.data;
   };
 
   const updateProfile = async (userData) => {
-    const response = await axios.put(`${API_URL}/profile`, userData, {
-      headers: { Authorization: `Bearer ${user.token}` }
-    });
-    if (response.data) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      setUser(response.data);
-    }
-    return response.data;
+    const { data } = await api.put('/auth/profile', userData);
+    // The backend returns the updated user, so we update our state.
+    setUser(data);
+    // Also update the wishlist state to prevent desynchronization
+    setWishlist(data.wishlist || []);
+    return data;
   };
 
   const deleteAccount = async () => {
-    await axios.delete(`${API_URL}/profile`, {
-      headers: { Authorization: `Bearer ${user.token}` }
-    });
+    await api.delete('/auth/profile');
     logout(); // On successful deletion, log the user out
   };
 
   const toggleWishlist = async (productId) => {
-    const { data } = await axios.put(`${API_URL}/profile/wishlist`, { productId }, {
-      headers: { Authorization: `Bearer ${user.token}` }
-    });
-    // Refetch to get populated wishlist
-    fetchWishlist(user.token);
+    // The backend should return the fully updated and populated user object.
+    const { data } = await api.put('/auth/profile/wishlist', { productId });
+    // Update state directly from the response, no extra fetch needed.
+    setUser(data);
+    setWishlist(data.wishlist || []);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, forgotPassword, resetPassword, updateProfile, deleteAccount, wishlist, toggleWishlist }}>
-      {!loading && children}
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated,
+        wishlist,
+        login,
+        register,
+        logout,
+        forgotPassword,
+        resetPassword,
+        updateProfile,
+        deleteAccount,
+        toggleWishlist,
+      }}
+    >
+      {children}
     </AuthContext.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

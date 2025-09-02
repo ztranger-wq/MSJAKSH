@@ -7,7 +7,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     position: sticky;
-    top: 65px; /* Height of the main header */
+    top: 85px; /* Approximate height of the new header */
     z-index: 40;
 }
 

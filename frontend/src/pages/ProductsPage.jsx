@@ -25,7 +25,11 @@ const ProductsPage = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <ProductList brand="MS" category={activeCategory === 'All' ? '' : activeCategory} searchTerm={searchTerm} />
+      <ProductList 
+        brand="MS" 
+        category={activeCategory === 'All' ? '' : activeCategory} 
+        searchTerm={searchTerm}
+      />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 
 const API_URL = '/api/products';
 
-const ProductList = ({ brand, category, searchTerm, limit }) => {
+const ProductList = ({ brand, category, searchTerm, limit, sortOrder }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,6 +22,7 @@ const ProductList = ({ brand, category, searchTerm, limit }) => {
         if (category) params.append('category', category);
         if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (limit) params.append('limit', limit);
+        if (sortOrder) params.append('sort', sortOrder);
 
         const { data } = await axios.get(`${API_URL}?${params.toString()}`);
         setProducts(data);
@@ -38,7 +39,7 @@ const ProductList = ({ brand, category, searchTerm, limit }) => {
     };
     
     fetchProducts();
-  }, [brand, category, debouncedSearchTerm, limit]);
+  }, [brand, category, debouncedSearchTerm, limit, sortOrder]);
 
   if (loading) return <div>Loading products...</div>;
   if (error) return <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>;

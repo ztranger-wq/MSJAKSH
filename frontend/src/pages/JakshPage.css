@@ -4,8 +4,24 @@
 }
 
 .search-bar {
-    max-width: 600px;
-    margin: 0 auto 3rem auto;
+    flex: 1 1 300px; /* Allow it to grow and shrink, with a base width of 300px */
+    min-width: 250px; /* Prevent it from becoming too small */
+}
+
+.page-controls {
+    display: flex;
+    flex-wrap: wrap; /* Allow controls to wrap onto the next line on smaller screens */
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem; /* Reduced gap to prevent overlap */
+    margin-bottom: 3rem;
+}
+
+.sort-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0; /* Prevent this from shrinking */
 }
 
 .search-bar input {
@@ -14,4 +30,11 @@
     border: 1px solid #d1d5db;
     border-radius: 9999px;
     font-size: 1rem;
+}
+
+.sort-selector select {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    background-color: #fff;
 }

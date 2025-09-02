@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
 import './ProductCard.css';
@@ -6,54 +7,46 @@ import './ProductCard.css';
 const ProductCard = ({ product }) => {
   const { addItemToCart } = useContext(CartContext);
   const { user, wishlist, toggleWishlist } = useContext(AuthContext);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
+  const navigate = useNavigate();
 
   const isLiked = wishlist.some(p => p._id === product._id);
 
-  const nextImage = (e) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % product.images.length);
-  };
-
-  const prevImage = (e) => {
-    e.stopPropagation();
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + product.images.length) % product.images.length);
+  const handleCardClick = (e) => {
+    if (e.target.closest('button')) {
+      return;
+    }
+    if (product && product._id) {
+      navigate(`/product/${product._id}`);
+    } else {
+      console.error('Product ID is missing');
+    }
   };
 
   const handleAddToCart = () => {
-    addItemToCart(product);
-    setIsAdded(true);
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 2000);
+    if (!product) {
+      console.error('Product is missing');
+      return;
+    }
+    try {
+      addItemToCart(product);
+      setIsAdded(true);
+      setTimeout(() => {
+        setIsAdded(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to add item to cart:', error);
+    }
   };
 
   const handleLike = () => {
-    if (!user) {
-      // In a real app, you might show a login modal here
-      alert('Please log in to add items to your wishlist.');
-      return;
-    }
-    toggleWishlist(product._id);
+    // Implement wishlist logic here
   };
 
   return (
-    <div className="product-card">
+    <div className="product-card" onClick={handleCardClick}>
       <div className="product-image-container">
-        {product.images.map((img, index) => (
-          <img key={index} src={img} alt={`${product.name} ${index + 1}`} className="slider-image" style={{ opacity: index === currentImageIndex ? 1 : 0 }} />
-        ))}
-        {product.images.length > 1 && (
-          <div className="slider-nav">
-            <button onClick={prevImage} className="slider-btn">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <button onClick={nextImage} className="slider-btn">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
-          </div>
-        )}
+        <img src={product.images[0]} alt={product.name} className="product-image" />
         <button onClick={handleLike} className={`like-btn ${isLiked ? 'liked' : ''}`}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 20.25l-7.682-7.682a4.5 4.5 0 010-6.364z" />
