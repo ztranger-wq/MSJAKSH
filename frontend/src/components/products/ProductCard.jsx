@@ -4,7 +4,7 @@ import { CartContext } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
 import './ProductCard.css';
 
-const ProductCard = ({ product, index = 0 }) => {
+const ProductCard = ({ product, index = 0, viewMode = 'grid' }) => {
   const { addItemToCart } = useContext(CartContext);
   const { user, wishlist = [], toggleWishlist } = useContext(AuthContext);
   const [isAdded, setIsAdded] = useState(false);
@@ -93,7 +93,7 @@ const ProductCard = ({ product, index = 0 }) => {
 
   return (
     <div 
-      className="product-card" 
+      className={`product-card ${viewMode === 'list' ? 'list-view' : ''}`}
       onClick={handleCardClick}
       style={{ animationDelay: `${index * 0.1}s` }}
     >

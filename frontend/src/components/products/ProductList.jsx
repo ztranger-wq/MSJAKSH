@@ -6,7 +6,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 
 const API_URL = '/api/products';
 
-const ProductList = ({ brand, category, searchTerm, limit, sortOrder }) => {
+const ProductList = ({ brand, category, searchTerm, limit, sortOrder, viewMode = 'grid', priceRange }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,6 +23,8 @@ const ProductList = ({ brand, category, searchTerm, limit, sortOrder }) => {
         if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (limit) params.append('limit', limit);
         if (sortOrder) params.append('sort', sortOrder);
+        if (priceRange?.min) params.append('minPrice', priceRange.min);
+        if (priceRange?.max) params.append('maxPrice', priceRange.max);
 
         const { data } = await axios.get(`${API_URL}?${params.toString()}`);
         // Ensure data is always an array
@@ -41,7 +43,7 @@ const ProductList = ({ brand, category, searchTerm, limit, sortOrder }) => {
     };
     
     fetchProducts();
-  }, [brand, category, debouncedSearchTerm, limit, sortOrder]);
+  }, [brand, category, debouncedSearchTerm, limit, sortOrder, priceRange]);
 
   if (loading) {
     return (
@@ -96,12 +98,13 @@ const ProductList = ({ brand, category, searchTerm, limit, sortOrder }) => {
         </div>
       )}
       
-      <div className="product-list-grid">
+      <div className={`product-list-grid ${viewMode === 'list' ? 'list-view' : ''}`}>
         {productsArray.map((product, index) => (
           <ProductCard 
             key={product._id || index} 
             product={product}
             index={index}
+            viewMode={viewMode}
           />
         ))}
       </div>

@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import './ProductFilters.css';
 
-const ProductFilters = ({ categories = [], activeCategory, setActiveCategory, searchTerm, setSearchTerm }) => {
+const ProductFilters = ({ 
+  categories = [], 
+  activeCategory, 
+  setActiveCategory, 
+  searchTerm, 
+  setSearchTerm,
+  onPriceFilter,
+  priceRange = { min: '', max: '' }
+}) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [localPriceRange, setLocalPriceRange] = useState(priceRange);
 
   const handleClearSearch = () => {
     setSearchTerm('');
@@ -11,13 +20,25 @@ const ProductFilters = ({ categories = [], activeCategory, setActiveCategory, se
   const handleResetFilters = () => {
     setActiveCategory('All');
     setSearchTerm('');
+    setLocalPriceRange({ min: '', max: '' });
+    if (onPriceFilter) {
+      onPriceFilter('', '');
+    }
+  };
+
+  const handlePriceChange = (field, value) => {
+    const newRange = { ...localPriceRange, [field]: value };
+    setLocalPriceRange(newRange);
+    if (onPriceFilter) {
+      onPriceFilter(newRange.min, newRange.max);
+    }
   };
 
   return (
     <div className="filters-container">
       <div className="filters-header">
         <h3 className="filters-title">Find Your Perfect Product</h3>
-        {(searchTerm || activeCategory !== 'All') && (
+        {(searchTerm || activeCategory !== 'All' || localPriceRange.min || localPriceRange.max) && (
           <button 
             className="filters-reset"
             onClick={handleResetFilters}
@@ -85,23 +106,14 @@ const ProductFilters = ({ categories = [], activeCategory, setActiveCategory, se
       {showAdvanced && (
         <div className="advanced-filters">
           <div className="filter-group">
-            <label htmlFor="sort-select">Sort By</label>
-            <select id="sort-select" className="filter-select">
-              <option value="newest">Newest First</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="popular">Most Popular</option>
-              <option value="rating">Highest Rated</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
             <label>Price Range</label>
             <div className="price-range">
               <div className="price-inputs">
                 <input 
                   type="number" 
                   placeholder="Min" 
+                  value={localPriceRange.min}
+                  onChange={(e) => handlePriceChange('min', e.target.value)}
                   className="price-input"
                   min="0"
                 />
@@ -109,6 +121,8 @@ const ProductFilters = ({ categories = [], activeCategory, setActiveCategory, se
                 <input 
                   type="number" 
                   placeholder="Max" 
+                  value={localPriceRange.max}
+                  onChange={(e) => handlePriceChange('max', e.target.value)}
                   className="price-input"
                   min="0"
                 />
@@ -122,6 +136,16 @@ const ProductFilters = ({ categories = [], activeCategory, setActiveCategory, se
               <option value="all">All Products</option>
               <option value="in-stock">In Stock</option>
               <option value="out-of-stock">Out of Stock</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="rating-filter">Minimum Rating</label>
+            <select id="rating-filter" className="filter-select">
+              <option value="">Any Rating</option>
+              <option value="4">4+ Stars</option>
+              <option value="3">3+ Stars</option>
+              <option value="2">2+ Stars</option>
             </select>
           </div>
         </div>

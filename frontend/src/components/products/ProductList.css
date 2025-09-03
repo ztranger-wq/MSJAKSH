@@ -63,6 +63,17 @@
       grid-template-columns: repeat(4, 1fr);
     } 
   }
+
+  /* List View Styles */
+  .product-list-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .product-list-grid.list-view .product-card {
+    max-width: none;
+  }
   
   /* Loading States */
   .loading-container {
