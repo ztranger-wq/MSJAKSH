@@ -2,6 +2,26 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const multer = require('multer');
+const path = require('path');
+
+// Set storage engine
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/profile/'),
+  filename: (req, file, cb) => {
+    cb(null, `user_${req.user._id}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.jpg','.jpeg','.png'].includes(ext)) cb(null, true);
+    else cb(new Error('Images only'));
+  }
+});
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -152,21 +172,36 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id); // Find the full user document to update
-
-    if (user) {
-      user.name = req.body.name || user.name;
-      await user.save();
-      // Re-fetch the user to ensure we send back the clean, populated data
-      const populatedUser = await User.findById(user._id).select('-password').populate('wishlist');
-      res.json(populatedUser);
-    } else {
-      res.status(404).json({ message: 'User not found' });
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    // Update text fields
+    user.name = req.body.name || user.name;
+
+    // --- Handle image upload ---
+    // If multer has added req.file, save its filename to the user record
+    if (req.file) {
+      // Store the relative path or URL to the uploaded file
+      user.profileImage = `/uploads/profile/${req.file.filename}`;
+    }
+    // --------------------------------
+
+    await user.save();
+
+    // Re-fetch user without password and with populated wishlist
+    const populatedUser = await User.findById(user._id)
+      .select('-password')
+      .populate('wishlist');
+
+    res.json(populatedUser);
   } catch (error) {
+    console.error('Update profile error:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
 
 const deleteUser = async (req, res) => {
   try {

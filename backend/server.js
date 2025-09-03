@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 // Point to the .env file in the backend directory, regardless of where the script is run from
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
 
 // --- Deployment Configuration ---
 if (process.env.NODE_ENV === 'production') {
