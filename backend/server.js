@@ -22,7 +22,6 @@ app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/uploads/profile', express.static(path.join(__dirname, 'uploads/profile')));
 
 // --- Deployment Configuration ---
 if (process.env.NODE_ENV === 'production') {

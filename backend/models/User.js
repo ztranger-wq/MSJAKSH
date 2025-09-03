@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
   phone: String,
   dateOfBirth: Date,
   gender: { type: String, enum: ['Male','Female','Other'] },
-  profileImage: String,
   cart: [cartItemSchema],
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   addresses: [addressSchema],
