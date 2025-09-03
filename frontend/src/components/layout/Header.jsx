@@ -1,13 +1,25 @@
-import { useState, useContext } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { CartContext } from '../../context/CartContext';
+import { 
+  FiMenu, 
+  FiX, 
+  FiShoppingCart, 
+  FiHeart, 
+  FiUser, 
+  FiLogOut,
+  FiHome,
+  FiPackage,
+  FiStar 
+} from 'react-icons/fi';
 import './Header.css';
 
 const Header = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const { cart } = useContext(CartContext);
+  const location = useLocation();
 
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
@@ -19,67 +31,177 @@ const Header = () => {
     setMobileMenuOpen(false);
   };
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className="header">
-      <div className="header-container container">
+      <div className="header-container">
+        {/* Logo */}
         <div className="logo-container">
-          <Link to="/" onClick={closeMobileMenu} className="logo-link">
-            <img src="/logo.png" alt="MS Enterprises Logo" className="logo-img" />
-            <span className="logo-text">MS Enterprises</span>
+          <Link to="/" className="logo-link" onClick={closeMobileMenu}>
+            <img
+              src="/logo.svg"
+              alt="MS Enterprise"
+              className="logo-img"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+            <span className="logo-text">MS Enterprise</span>
           </Link>
         </div>
+
+        {/* Desktop Navigation */}
         <nav className="desktop-nav">
-          <NavLink to="/" className="nav-link">About</NavLink>
-          <NavLink to="/products" className="nav-link">Products</NavLink>
-          <NavLink to="/jaksh" className="nav-link jaksh-link">Jaksh</NavLink>
-          <NavLink to="/cart" className="nav-link cart-link">
-            <svg xmlns="http://www.w3.org/2000/svg" className="cart-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+          <NavLink to="/" className="nav-link">
+            <FiHome className="nav-icon" />
+            Home
           </NavLink>
-          {user && (
-            <NavLink to="/wishlist" className="nav-link wishlist-icon-link">
-              <svg xmlns="http://www.w3.org/2000/svg" className="wishlist-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 20.25l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
-            </NavLink>
-          )}
-          {user ? (
-            <NavLink to="/profile" className="nav-link profile-icon-link">
-              <svg xmlns="http://www.w3.org/2000/svg" className="profile-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zM12 21a9 9 0 100-18 9 9 0 000 18z" />
-              </svg>
-            </NavLink>
-          ) : (
-            <NavLink to="/login" className="nav-link">Login/Sign Up</NavLink>
-          )}
+          <NavLink to="/products" className="nav-link">
+            <FiPackage className="nav-icon" />
+            Products
+          </NavLink>
+          <NavLink to="/jaksh" className="nav-link jaksh-link">
+            <FiStar className="nav-icon" />
+            Jaksh
+          </NavLink>
         </nav>
+
+        {/* Desktop User Menu */}
+        <div className="profile-menu desktop-nav">
+          {user ? (
+            <>
+              <Link to="/wishlist" className="nav-link wishlist-icon-link">
+                <FiHeart className="wishlist-icon" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
+              <Link to="/cart" className="nav-link cart-link">
+                <FiShoppingCart className="cart-icon" />
+                {cartItemCount > 0 && (
+                  <span className="cart-badge">{cartItemCount}</span>
+                )}
+                <span className="sr-only">Cart</span>
+              </Link>
+              <Link to="/profile" className="nav-link profile-icon-link">
+                <FiUser className="profile-icon" />
+                <span className="sr-only">Profile</span>
+              </Link>
+              <button onClick={logout} className="nav-link logout-button">
+                <FiLogOut className="logout-icon" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/register" className="nav-link">Register</Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
         <div className="mobile-menu-button-container">
-          <button onClick={toggleMobileMenu} className="mobile-menu-button">
-            <svg className="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
+          <button
+            onClick={toggleMobileMenu}
+            className="mobile-menu-button"
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? (
+              <FiX className="menu-icon" />
+            ) : (
+              <FiMenu className="menu-icon" />
+            )}
           </button>
         </div>
       </div>
+
+      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="mobile-nav">
-          <NavLink to="/" className="mobile-nav-link" onClick={closeMobileMenu}>About</NavLink>
-          <NavLink to="/products" className="mobile-nav-link" onClick={closeMobileMenu}>Products</NavLink>
-          <NavLink to="/jaksh" className="mobile-nav-link jaksh-link" onClick={closeMobileMenu}>Jaksh</NavLink>
-          <NavLink to="/cart" className="mobile-nav-link" onClick={closeMobileMenu}>
-            Cart {cartItemCount > 0 && `(${cartItemCount})`}
+        <nav className="mobile-nav">
+          <NavLink to="/" className="mobile-nav-link" onClick={closeMobileMenu}>
+            <FiHome className="mobile-nav-icon" />
+            Home
           </NavLink>
-          {user && (
-            <NavLink to="/wishlist" className="mobile-nav-link" onClick={closeMobileMenu}>Wishlist</NavLink>
-          )}
+          <NavLink to="/products" className="mobile-nav-link" onClick={closeMobileMenu}>
+            <FiPackage className="mobile-nav-icon" />
+            Products
+          </NavLink>
+          <NavLink to="/jaksh" className="mobile-nav-link" onClick={closeMobileMenu}>
+            <FiStar className="mobile-nav-icon" />
+            Jaksh
+          </NavLink>
+          
           {user ? (
             <>
-              <NavLink to="/profile" className="mobile-nav-link" onClick={closeMobileMenu}>My Profile</NavLink>
+              <NavLink to="/wishlist" className="mobile-nav-link" onClick={closeMobileMenu}>
+                <FiHeart className="mobile-nav-icon" />
+                Wishlist
+              </NavLink>
+              <NavLink to="/cart" className="mobile-nav-link" onClick={closeMobileMenu}>
+                <FiShoppingCart className="mobile-nav-icon" />
+                Cart {cartItemCount > 0 && `(${cartItemCount})`}
+              </NavLink>
+              <NavLink to="/profile" className="mobile-nav-link" onClick={closeMobileMenu}>
+                <FiUser className="mobile-nav-icon" />
+                Profile
+              </NavLink>
+              <button
+                onClick={() => {
+                  logout();
+                  closeMobileMenu();
+                }}
+                className="mobile-nav-link"
+                style={{ background: 'none', border: 'none', width: '100%', textAlign: 'center' }}
+              >
+                <FiLogOut className="mobile-nav-icon" />
+                Logout
+              </button>
             </>
           ) : (
-            <NavLink to="/login" className="mobile-nav-link" onClick={closeMobileMenu}>Login/Sign Up</NavLink>
+            <>
+              <NavLink to="/login" className="mobile-nav-link" onClick={closeMobileMenu}>
+                Login
+              </NavLink>
+              <NavLink to="/register" className="mobile-nav-link" onClick={closeMobileMenu}>
+                Register
+              </NavLink>
+            </>
           )}
-        </div>
+        </nav>
+      )}
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="mobile-menu-overlay"
+          onClick={closeMobileMenu}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 40
+          }}
+        />
       )}
     </header>
   );
