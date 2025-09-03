@@ -88,8 +88,8 @@ const Hero = () => {
     <section className="hero-section">
       <canvas id="hero-canvas" ref={canvasRef}></canvas>
       <div className="container hero-content">
-        <h1 className="hero-title">Ultimate Solution for Narrow Fabric Excellence</h1>
-        <p className="hero-subtitle">From Concept to Creation, we deliver high-quality custom labels, tags, and more.</p>
+        <h1 className="hero-title">The Ultimate Solution for Narrow Fabric Excellence</h1>
+        <p className="hero-subtitle">From initial concept to the final creation, we are dedicated to delivering high-quality custom labels, tags, and much more.</p>
         <Link to="/products" className="button-primary">
           Explore Our Products
         </Link>

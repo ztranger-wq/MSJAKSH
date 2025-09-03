@@ -55,7 +55,6 @@ const JakshHero = () => {
                     to="/jaksh" 
                     className="hero-cta-primary"
                     onClick={() => {
-                      // Scroll to products section
                       setTimeout(() => {
                         document.querySelector('.products-section')?.scrollIntoView({ 
                           behavior: 'smooth' 
@@ -65,7 +64,7 @@ const JakshHero = () => {
                   >
                     {slide.cta}
                   </Link>
-                  <Link to="/contact" className="hero-cta-secondary">
+                  <Link to="/quote" className="hero-cta-secondary">
                     Get Quote
                   </Link>
                 </div>
@@ -75,7 +74,6 @@ const JakshHero = () => {
         ))}
       </div>
       
-      {/* Slide Indicators */}
       <div className="hero-indicators">
         {slides.map((_, index) => (
           <button
@@ -86,7 +84,6 @@ const JakshHero = () => {
         ))}
       </div>
       
-      {/* Navigation Arrows */}
       <button 
         className="hero-nav prev"
         onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}

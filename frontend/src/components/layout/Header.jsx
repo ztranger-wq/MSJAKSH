@@ -11,7 +11,6 @@ import {
   FiLogOut,
   FiHome,
   FiPackage,
-  FiStar 
 } from 'react-icons/fi';
 import './Header.css';
 
@@ -31,12 +30,10 @@ const Header = () => {
     setMobileMenuOpen(false);
   };
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -52,22 +49,17 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        {/* Logo */}
         <div className="logo-container">
           <Link to="/" className="logo-link" onClick={closeMobileMenu}>
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="MS Enterprise"
               className="logo-img"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
             />
             <span className="logo-text">MS Enterprise</span>
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="desktop-nav">
           <NavLink to="/" className="nav-link">
             <FiHome className="nav-icon" />
@@ -78,12 +70,10 @@ const Header = () => {
             Products
           </NavLink>
           <NavLink to="/jaksh" className="nav-link jaksh-link">
-            <FiStar className="nav-icon" />
             Jaksh
           </NavLink>
         </nav>
 
-        {/* Desktop User Menu */}
         <div className="profile-menu desktop-nav">
           {user ? (
             <>
@@ -115,7 +105,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <div className="mobile-menu-button-container">
           <button
             onClick={toggleMobileMenu}
@@ -132,7 +121,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <nav className="mobile-nav">
           <NavLink to="/" className="mobile-nav-link" onClick={closeMobileMenu}>
@@ -144,7 +132,6 @@ const Header = () => {
             Products
           </NavLink>
           <NavLink to="/jaksh" className="mobile-nav-link" onClick={closeMobileMenu}>
-            <FiStar className="mobile-nav-icon" />
             Jaksh
           </NavLink>
           
@@ -185,23 +172,6 @@ const Header = () => {
             </>
           )}
         </nav>
-      )}
-
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="mobile-menu-overlay"
-          onClick={closeMobileMenu}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 40
-          }}
-        />
       )}
     </header>
   );

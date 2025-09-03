@@ -62,12 +62,6 @@ const ProfilePage = () => {
           <div className="profile-header">
             <div className="profile-info">
               <h2>{user.name}</h2><p className="email">{user.email}</p>
-              <div className="membership-badge">
-                <span className={`tier-badge tier-${(user.membershipTier || 'bronze').toLowerCase()}`}>
-                  {user.membershipTier || 'Bronze'} Member
-                </span>
-              </div>
-              <div className="loyalty-points"><span>{user.loyaltyPoints || 0} Points</span></div>
             </div>
           </div>
           <ProfileStats stats={orderStats} />

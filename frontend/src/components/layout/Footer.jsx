@@ -10,7 +10,7 @@ const Footer = () => {
           <h2>MS Enterprise</h2>
           <p className="footer-description">
             Your trusted partner for premium corporate solutions, promotional merchandise, 
-            and professional services. Quality craftsmanship meets innovative design.
+            and professional services.
           </p>
         </div>
 
@@ -30,16 +30,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Footer Links & Social */}
+        {/* Social Links */}
         <div className="footer-navigation">
-          <nav className="footer-links">
-            <a href="/about" className="footer-link">About Us</a>
-            <a href="/privacy" className="footer-link">Privacy Policy</a>
-            <a href="/terms" className="footer-link">Terms of Service</a>
-            <a href="/contact" className="footer-link">Contact</a>
-            <a href="/support" className="footer-link">Support</a>
-          </nav>
-
           <div className="social-links">
             <a 
               href="https://facebook.com/msenterprise" 
@@ -83,7 +75,6 @@ const Footer = () => {
         {/* Copyright */}
         <div className="copyright">
           <p>&copy; {new Date().getFullYear()} MS Enterprise. All rights reserved.</p>
-          <p>Crafted with ❤️ for our valued customers</p>
         </div>
       </div>
     </footer>

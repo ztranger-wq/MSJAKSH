@@ -4,6 +4,7 @@ import Footer from "./components/layout/Footer";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
 import JakshPage from "./pages/JakshPage";
+import QuotePage from "./pages/QuotePage"; // Import the new page
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -14,16 +15,16 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
-import { OrderProvider } from "./context/OrderContext";   // ← added import
+import { OrderProvider } from "./context/OrderContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ScrollProgressBar from './components/layout/ScrollProgressBar';
-import "./index.css"; // Import global styles
+import "./index.css";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <OrderProvider> {/* ← wrap with OrderProvider */}
+        <OrderProvider>
           <CartProvider>
             <div className="app-container">
               <ScrollProgressBar />
@@ -33,6 +34,7 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/jaksh" element={<JakshPage />} />
+                  <Route path="/quote" element={<QuotePage />} /> {/* Add the new route */}
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
