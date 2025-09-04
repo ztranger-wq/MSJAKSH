@@ -11,19 +11,17 @@ const timelineData = [
 
 const TimelineItem = ({ data, isActive, dotRef, index }) => {
   const isEven = index % 2 !== 0; // 0-indexed, so item 2 is index 1 (odd)
-  const content = (
-    <div className="timeline-content-wrapper">
-      <div className="timeline-content">
-        <h3 className="font-semibold text-xl mb-2 text-main-red">{data.title}</h3>
-        <p>{data.description}</p>
-      </div>
-    </div>
-  );
 
   return (
     <div className={`timeline-item ${isActive ? 'active' : ''} ${isEven ? 'even' : 'odd'}`}>
       <div className="timeline-dot" ref={dotRef}></div>
-      {isEven ? <>{content}<div className="timeline-spacer"></div></> : <><div className="timeline-spacer"></div>{content}</>}
+      <div className="timeline-spacer"></div>
+      <div className="timeline-content-wrapper">
+        <div className="timeline-content">
+          <h3 className="font-semibold text-xl mb-2 text-main-red">{data.title}</h3>
+          <p>{data.description}</p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -57,17 +55,21 @@ const OrderTimeline = () => {
         const prevDot = dotRefs.current[index - 1];
         if (!prevDot) return;
         const prevDotRect = prevDot.getBoundingClientRect();
-        const prevX = isMobile ? x : prevDotRect.left - containerRect.left + (prevDotRect.width / 2);
         const prevY = prevDotRect.top - containerRect.top + (prevDotRect.height / 2);
-        
-        const curveFactor = isMobile ? 0 : 80;
-        // The curve direction depends on whether the current item is on the right (even index) or left (odd index)
-        const cpx1 = prevX + curveFactor * (index % 2 === 0 ? -1 : 1);
-        const cpy1 = prevY + (y - prevY) / 2;
-        const cpx2 = x - curveFactor * (index % 2 === 0 ? -1 : 1);
-        const cpy2 = y - (y - prevY) / 2;
-        
-        pathData += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${x} ${y}`;
+
+        if (isMobile) {
+          pathData += ` L ${x} ${y}`;
+        } else {
+          const prevX = prevDotRect.left - containerRect.left + (prevDotRect.width / 2);
+          const curveFactor = 80;
+          // The curve direction depends on whether the current item is on the right (even index) or left (odd index)
+          const cpx1 = prevX + curveFactor * (index % 2 === 0 ? -1 : 1);
+          const cpy1 = prevY + (y - prevY) / 2;
+          const cpx2 = x - curveFactor * (index % 2 === 0 ? -1 : 1);
+          const cpy2 = y - (y - prevY) / 2;
+
+          pathData += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${x} ${y}`;
+        }
       }
     });
 
