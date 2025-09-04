@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' 
-    ? '/api' 
-    : 'http://localhost:5001/api',
+  // This will be replaced with the actual API Gateway URL after deployment
+  baseURL: 'https://<YOUR_API_GATEWAY_ID>.execute-api.us-east-1.amazonaws.com/dev',
   headers: {
     'Content-Type': 'application/json',
   },
