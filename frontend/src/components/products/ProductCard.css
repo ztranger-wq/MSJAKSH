@@ -53,10 +53,6 @@
   .like-btn:hover {
     transform: scale(1.1);
   }
-
-.like-btn:focus {
-    outline: none;
-}
   
   .like-btn.liked {
     color: var(--main-red);

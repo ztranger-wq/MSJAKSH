@@ -104,7 +104,6 @@
     position: absolute;
     top: -2px; /* Moved closer */
     right: -2px; /* Moved closer */
-  display: none;
   }
   
   .profile-menu {
@@ -219,10 +218,6 @@
     .profile-menu {
       gap: 1.5rem;
     }
-
-.cart-badge {
-    display: block;
-}
   }
   
   /* Desktop styles (1024px and up) */

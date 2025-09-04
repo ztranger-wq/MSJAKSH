@@ -101,6 +101,10 @@
     cursor: not-allowed;
 }
 
+.quantity-selector-cart button:focus {
+    outline: none;
+}
+
 .quantity-selector-cart span {
     padding: 0 0.5rem;
     font-weight: 500;
@@ -172,4 +176,12 @@
 
 .checkout-btn {
     margin-top: 1rem;
+}
+
+.cart-item-checkbox {
+  margin-right: 1rem;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  align-self: center;
 }

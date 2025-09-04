@@ -9,11 +9,6 @@
     margin-bottom: 3rem;
 }
 
-.featured-products-list {
-    display: flex;
-    justify-content: center !important;
-}
-
 .view-all-container {
     text-align: center;
     margin-top: 3rem;

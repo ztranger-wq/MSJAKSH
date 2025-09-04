@@ -84,35 +84,13 @@ export const AuthProvider = ({ children }) => {
     logout(); // On successful deletion, log the user out
   };
 
-  const toggleWishlist = useCallback(async (product) => {
-    const productId = String(product._id);
-    const originalWishlist = [...wishlist];
-
-    const isWishlisted = originalWishlist.some(p => String(p._id) === productId);
-
-    let updatedWishlist;
-    if (isWishlisted) {
-      updatedWishlist = originalWishlist.filter(p => String(p._id) !== productId);
-    } else {
-      updatedWishlist = [...originalWishlist, product];
-    }
-
-    // Optimistically update the UI
-    setWishlist(updatedWishlist);
-
-    try {
-      // Send request to the backend
-      const { data } = await api.put('/auth/profile/wishlist', { productId });
-      // Sync state with the backend response
-      setUser(data);
-      setWishlist(data.wishlist || []);
-    } catch (error) {
-      // Revert UI on error
-      setWishlist(originalWishlist);
-      console.error('Failed to toggle wishlist:', error);
-      // Here you might want to show a toast to the user
-    }
-  }, [wishlist]);
+  const toggleWishlist = async (productId) => {
+    // The backend should return the fully updated and populated user object.
+    const { data } = await api.put('/auth/profile/wishlist', { productId });
+    // Update state directly from the response, no extra fetch needed.
+    setUser(data);
+    setWishlist(data.wishlist || []);
+  };
 
   return (
     <AuthContext.Provider

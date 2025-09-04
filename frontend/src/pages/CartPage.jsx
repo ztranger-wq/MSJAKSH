@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 import { FaTrash } from 'react-icons/fa';
@@ -6,9 +6,9 @@ import './CartPage.css';
 
 const CartPage = () => {
   const { cart, removeItemFromCart, updateItemQuantity, clearCart } = useContext(CartContext);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-    // Normalize cart items because backend returns { product: {...}, quantity }
-  // while guest/local cart might store { product: {...}, quantity } or flattened product fields.
+  // Normalize cart items
   const normalizeItem = (item) => {
     if (!item) return null;
     const product = item.product || item;
@@ -26,10 +26,26 @@ const CartPage = () => {
 
   const normalizedCart = (cart || []).map(normalizeItem).filter(Boolean);
 
+  useEffect(() => {
+    // Initially, all items are selected
+    setSelectedItems(normalizedCart.map(item => item._id));
+  }, [cart]);
+
+  const handleSelectItem = (itemId) => {
+    setSelectedItems(prevSelected =>
+      prevSelected.includes(itemId)
+        ? prevSelected.filter(id => id !== itemId)
+        : [...prevSelected, itemId]
+    );
+  };
+
   const jakshItems = normalizedCart.filter(item => item.brand === 'Jaksh');
   const msItems = normalizedCart.filter(item => item.brand === 'MS');
 
-  const subtotal = normalizedCart.reduce((acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 0), 0);
+  const subtotal = normalizedCart
+    .filter(item => selectedItems.includes(item._id))
+    .reduce((acc, item) => acc + (Number(item.price) || 0) * (item.quantity || 0), 0);
+
   const shipping = subtotal > 0 ? 50 : 0;
   const total = subtotal + shipping;
 
@@ -53,6 +69,12 @@ const CartPage = () => {
                 <h2 className="cart-brand-title">Jaksh Products</h2>
                 {jakshItems.map(item => (
                   <div key={item._id} className="cart-item">
+                    <input
+                      type="checkbox"
+                      className="cart-item-checkbox"
+                      checked={selectedItems.includes(item._id)}
+                      onChange={() => handleSelectItem(item._id)}
+                    />
                     <img src={item.images[0]} alt={item.name} className="cart-item-image" />
                     <div className="cart-item-details">
                       <Link to={`/product/${item._id}`} className="cart-item-name">{item.name}</Link>
@@ -76,6 +98,12 @@ const CartPage = () => {
                 <h2 className="cart-brand-title">MS Enterprises Products</h2>
                 {msItems.map(item => (
                   <div key={item._id} className="cart-item">
+                    <input
+                      type="checkbox"
+                      className="cart-item-checkbox"
+                      checked={selectedItems.includes(item._id)}
+                      onChange={() => handleSelectItem(item._id)}
+                    />
                     <img src={item.images[0]} alt={item.name} className="cart-item-image" />
                     <div className="cart-item-details">
                       <Link to={`/product/${item._id}`} className="cart-item-name">{item.name}</Link>
