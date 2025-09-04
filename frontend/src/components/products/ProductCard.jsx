@@ -56,7 +56,7 @@ const ProductCard = ({ product, index = 0, viewMode = 'grid' }) => {
     }
 
     try {
-      await toggleWishlist(product._id);
+      await toggleWishlist(product);
     } catch (error) {
       console.error('Failed to toggle wishlist:', error);
       alert('Failed to update wishlist. Please try again.');
