@@ -11,8 +11,6 @@ const orderRoutes = require('./routes/orderRoutes');
 // Point to the .env file in the backend directory, regardless of where the script is run from
 dotenv.config({ path: path.resolve(__dirname, './.env') });
 
-connectDB();
-
 const app = express();
 
 app.use(cors());
@@ -23,19 +21,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 
-// --- Deployment Configuration ---
-if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, '/frontend/dist')));
+// A simple root route for testing the API
+app.get('/api', (req, res) => {
+  res.send('API is running...');
+});
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
-  );
-} else {
-  app.get('/', (req, res) => {
-    res.send('API is running for development...');
-  });
-}
-
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+module.exports = app;
