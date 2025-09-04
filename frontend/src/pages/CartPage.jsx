@@ -44,6 +44,10 @@ const CartPage = () => {
       ) : (
         <div className="cart-layout">
           <div className="cart-items-container">
+            <div className="cart-header">
+              <Link to="/products" className="continue-shopping-link">&larr; Continue shopping</Link>
+              <button onClick={clearCart} className="button-danger">Clear Cart</button>
+            </div>
             {jakshItems.length > 0 && (
               <div className="cart-brand-section">
                 <h2 className="cart-brand-title">Jaksh Products</h2>
@@ -90,7 +94,6 @@ const CartPage = () => {
                 ))}
               </div>
             )}
-            <button onClick={clearCart} className="clear-cart-btn">Clear Cart</button>
           </div>
           <div className="order-summary-container">
             <h2 className="summary-title">Order Summary</h2>

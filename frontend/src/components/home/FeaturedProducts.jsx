@@ -7,8 +7,10 @@ const FeaturedProducts = () => {
     <section id="products" className="featured-products-section">
       <div className="container">
         <h2>Our Products</h2>
-        {/* We pass a limit to the ProductList to only show 3 */}
-        <ProductList brand="MS" limit={3} />
+        <div className="featured-products-list">
+            {/* We pass a limit to the ProductList to only show 3 */}
+            <ProductList brand="MS" limit={3} />
+        </div>
         <div className="view-all-container">
           <Link to="/products" className="button-primary">
             View All Products
